@@ -1,17 +1,15 @@
 package com.example.delegatedpropertiessample
 
 import android.os.Bundle
+import android.os.SystemClock
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
 import com.example.delegatedpropertiessample.databinding.FragmentFirstBinding
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FirstFragment : Fragment() {
+class FirstFragment : Fragment(R.layout.fragment_first) {
 
     private var _binding: FragmentFirstBinding? = null
 
@@ -19,22 +17,23 @@ class FirstFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-
-        _binding = FragmentFirstBinding.inflate(inflater, container, false)
-        return binding.root
-
-    }
+    private val userSettings by lazy { UserSettings(requireContext()) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.buttonFirst.setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+        _binding = FragmentFirstBinding.bind(view)
+        updateDisplay()
+        binding.buttonEdit.setOnClickListener {
+            val ret = SystemClock.elapsedRealtime()
+            userSettings.userName = "userName update: $ret"
+            userSettings.iconUrl = "iconUrl update: $ret"
+            updateDisplay()
         }
+    }
+
+    private fun updateDisplay() {
+        binding.textviewUserName.text = userSettings.userName
+        binding.textviewIconUrl.text = userSettings.iconUrl
     }
 
     override fun onDestroyView() {
